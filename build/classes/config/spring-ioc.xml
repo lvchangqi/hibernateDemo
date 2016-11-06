@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.1.xsd">
+
+	
+	<!-- 扫描除了Controller之外所有注解包(Controller在MVC中配置) -->
+	<context:component-scan base-package="com.lvchangqi" use-default-filters="false">
+		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+		<context:exclude-filter type="annotation" expression="org.springframework.web.bind.annotation.ControllerAdvice"/>
+	</context:component-scan>
+	
+	<!-- 配置数据源信息 -->
+	<context:property-placeholder location="classpath:proerties/db.properties"/>
+	
+	<!-- 配置数据源 -->
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+		<property name="user" value="${jdbc.user}"/>
+		<property name="password" value="${jdbc.password}"/>
+		<property name="driverClass" value="${jdbc.driver}"/>
+		<property name="jdbcUrl" value="${jdbc.url}"/>
+		
+		<!-- 初始化连接数 -->
+		<property name="initialPoolSize" value="${c3p0.init}"/>
+		<!-- 线程池中最小连接数 -->
+		<property name="minPoolSize" value="${c3p0.min}"/>
+		<!-- 线程池中最小连接数 -->
+		<property name="maxPoolSize" value="${c3p0.max}"/>
+		<!-- 过期时间 -->
+		<property name="maxIdleTime" value="${c3p0.maxIdle}"/>
+		<!-- 过期时间检查 -->
+		<property name="idleConnectionTestPeriod" value="${c3p0.idleTest}"/>
+		<!-- 一次连接获取的连接数 -->
+		<property name="acquireIncrement" value="${c3p0.acquire}"/>
+		
+	</bean>
+	
+	<!-- 配置sessionFactory -->
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+		<!-- 配置数据源 -->
+		<property name="dataSource" ref="dataSource"/>
+		<!-- 配置实体类包 -->
+		<property name="namingStrategy">
+			<bean class="org.hibernate.cfg.ImprovedNamingStrategy"/>
+		</property>
+		<!-- 使用配置文件 -->
+		<property name="mappingLocations" value="classpath*:/hbm/*.hbm.xml"/>
+		<!-- 扫描Hibernate注解(存在配置文件则使用配置文件) -->
+		<!--<property name="packagesToScan" value="com.lvchangqi.pojo"/>-->
+		
+		<!-- 配置hibernate属性 -->
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">${hibernate.dialect}</prop>
+				<prop key="hibernate.show_sql">${hibernate.show_sql}</prop>
+				<prop key="hibernate.format_sql">${hibernate.format_sql}</prop>
+				<prop key="hibernate.hbm2ddl.auto">${hibernate.hbm2ddl}</prop>
+			</props>
+		</property>
+	</bean>
+	
+	<!-- 配置事务管理 -->
+	<bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory"/>
+	</bean>
+	
+</beans>
