@@ -1,4 +1,4 @@
-# hibernate+spring+springmvc的简单框架整合#
+# Spring4.1.7+SpringMVC4.1.7+Hibernate4.2.2 框架简单整合#
 
 ### 注意事项:
 **1.controller分为两类,路由(视图)控制器和基本控制器**
